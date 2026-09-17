@@ -4,27 +4,6 @@
 An autonomous, policy-grounded IT Support Agent built for **Veridian Corp** (set in the week of 21–25 September 2026). The agent interprets employee queries, strictly enforces the 10 corporate policies (`KB-01` to `KB-10`) and Asset Management Policy, performs instant self-service resolutions, prompts for clarification on ambiguous inputs, intercepts critical security threats (e.g. phishing email forwarding), creates structured tickets, and records an immutable audit trail.
 
 ---
-
-## 🚀 One-Command Local Run
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v16 or higher)
-
-### Quick Start
-```bash
-# 1. Clone repository
-git clone <YOUR_GITHUB_REPO_URL>
-cd it-support-mern
-
-# 2. Install backend dependencies
-cd backend
-npm install
-cd ..
-
-# 3. Start the application
-npm start
-```
-
 Open your browser and navigate to:
 👉 **`http://localhost:5050`**
 
@@ -66,7 +45,6 @@ Open your browser and navigate to:
 |  - Policies Collection (KB-01 to KB-10 ground truth)                  |
 +-----------------------------------------------------------------------+
 ```
-
 ---
 
 ## 🎯 Coverage of the 15 Employee Cases
