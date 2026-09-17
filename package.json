@@ -7,6 +7,10 @@
     "start": "node backend/server.js",
     "dev": "node backend/server.js"
   },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
   "keywords": ["mern", "ai-agent", "aionos", "it-support"],
   "author": "",
   "license": "ISC"
