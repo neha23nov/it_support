@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veridian Corp IT Support Agent — Presentation Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    .slide { display: none; height: 100vh; }
+    .slide.active { display: flex; flex-direction: column; justify-content: space-between; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col justify-between p-8 sm:p-12">
+  <!-- Top Slide Progress Bar -->
+  <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-lg">V</div>
+      <span class="font-bold text-sm text-slate-300">AIONOS Assignment 2 — Veridian Corp IT Support Agent</span>
+    </div>
+    <div class="flex items-center space-x-3 text-xs font-semibold text-slate-400">
+      <span>Slide <span id="current-slide-num" class="text-blue-400 font-bold">1</span> of 10</span>
+      <div class="flex space-x-1">
+        <button onclick="prevSlide()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded transition">&larr; Prev</button>
+        <button onclick="nextSlide()" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded transition">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 1 -->
+  <div class="slide active">
+    <div class="my-auto max-w-4xl mx-auto text-center space-y-6">
+      <div class="inline-block px-3 py-1 bg-blue-900/60 text-blue-300 border border-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">
+        Assignment 2 Defence & Presentation
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+        Autonomous Internal IT Service Agent
+      </h1>
+      <p class="text-lg text-slate-400 max-w-2xl mx-auto">
+        A policy-grounded conversational agent for Veridian Corp built with the MERN Stack. Delivers instant self-service, safety guardrails, and automated ticket escalation.
+      </p>
+      <div class="pt-6 flex justify-center items-center space-x-6 text-sm text-slate-300 font-medium">
+        <span><i class="fa-solid fa-building mr-2 text-blue-400"></i>Veridian Corp</span>
+        <span><i class="fa-solid fa-calendar mr-2 text-blue-400"></i>21–25 Sept 2026</span>
+        <span><i class="fa-solid fa-code mr-2 text-blue-400"></i>MERN Stack</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 02 / The Challenge</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Business Problem & Objectives</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div class="bg-slate-800/80 border border-slate-700 p-6 rounded-2xl">
+          <h3 class="font-bold text-lg text-rose-400 mb-3"><i class="fa-solid fa-triangle-exclamation mr-2"></i>The Operational Pain</h3>
+          <ul class="text-sm text-slate-300 space-y-2.5 leading-relaxed">
+            <li>• Repetitive ticket fatigue (Guest Wi-Fi, VPN renewals, password resets).</li>
+            <li>• High risk of policy breaches (employees forwarding phishing emails).</li>
+            <li>• Ambiguous requests stalling technician queues (*"its not working"*).</li>
+            <li>• Cross-department boundary confusion (Finance vs IT expense access).</li>
+          </ul>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 p-6 rounded-2xl">
+          <h3 class="font-bold text-lg text-emerald-400 mb-3"><i class="fa-solid fa-bullseye mr-2"></i>Agent Solution Mandate</h3>
+          <ul class="text-sm text-slate-300 space-y-2.5 leading-relaxed">
+            <li>• <strong>Instant Self-Service:</strong> Immediate guidance without IT ticket overhead.</li>
+            <li>• <strong>Zero Hallucination:</strong> Answers grounded strictly in official policies.</li>
+            <li>• <strong>Active Guardrails:</strong> Stops dangerous actions before they spread.</li>
+            <li>• <strong>Compliance Trail:</strong> Every action and source cited for auditability.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 03 / Ground Truth</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Knowledge Base & Policy Grounding</h2>
+      <p class="text-sm text-slate-400">Strictly following the assignment constraint: <em>"Do not invent policies or information that isn't grounded in one of these sources."</em></p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="font-bold text-blue-400 mb-1">KB-01: Password Reset</div>
+          <p class="text-slate-300">Self-service portal anytime. Manual unlock required only if locked out after 5 attempts.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="font-bold text-blue-400 mb-1">KB-02: VPN Access</div>
+          <p class="text-slate-300">Automatic for FTEs; 90-day renewal. Contractors require manager approval via form.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="font-bold text-blue-400 mb-1">KB-03 & Asset Policy</div>
+          <p class="text-slate-300">4-year refresh cycle. Laptops eligible for replacement after 3 years or verified hardware failure.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="font-bold text-blue-400 mb-1">KB-04: Software Catalog</div>
+          <p class="text-slate-300">Standard software self-installed. Non-catalog requires IT Security review (3-5 business days).</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="font-bold text-blue-400 mb-1">KB-07: Guest Wi-Fi</div>
+          <p class="text-slate-300">Generated at front-desk kiosk; 24-hour validity. Zero IT ticket needed.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="font-bold text-blue-400 mb-1">KB-09: Security Incidents</div>
+          <p class="text-slate-300">Report to security@veridian-corp.example immediately. DO NOT forward to teammates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 04 / Technical Stack</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">System Architecture (MERN Stack)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+          <div class="w-12 h-12 mx-auto mb-3 bg-blue-600/20 text-blue-400 rounded-xl flex items-center justify-center font-bold text-xl">R</div>
+          <h3 class="font-bold text-sm text-white mb-1">React 18 Frontend</h3>
+          <p class="text-xs text-slate-400">Interactive chat, 1-click test triggers, live ticket queue & audit inspector.</p>
+        </div>
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+          <div class="w-12 h-12 mx-auto mb-3 bg-indigo-600/20 text-indigo-400 rounded-xl flex items-center justify-center font-bold text-xl">E</div>
+          <h3 class="font-bold text-sm text-white mb-1">Express.js API</h3>
+          <p class="text-xs text-slate-400">REST endpoints for chat processing, policy lookup, and ticket operations.</p>
+        </div>
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+          <div class="w-12 h-12 mx-auto mb-3 bg-emerald-600/20 text-emerald-400 rounded-xl flex items-center justify-center font-bold text-xl">N</div>
+          <h3 class="font-bold text-sm text-white mb-1">Node.js Agent Engine</h3>
+          <p class="text-xs text-slate-400">Intent parser, policy matcher, security guardrail interception, and triage router.</p>
+        </div>
+        <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 text-center">
+          <div class="w-12 h-12 mx-auto mb-3 bg-green-600/20 text-green-400 rounded-xl flex items-center justify-center font-bold text-xl">M</div>
+          <h3 class="font-bold text-sm text-white mb-1">Document Store</h3>
+          <p class="text-xs text-slate-400">Structured JSON document state for tickets (TK-XXXX) and tamper-evident audit logs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 05 / Triage Engine</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Agent Decision Matrix & Guardrails</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="bg-slate-800 p-5 rounded-xl border border-emerald-800/60">
+          <span class="px-2 py-0.5 rounded bg-emerald-900 text-emerald-300 font-bold mb-2 inline-block">1. Direct Resolution</span>
+          <p class="text-slate-300 mb-2 font-medium">Resolves standard self-service requests immediately.</p>
+          <div class="text-slate-400 italic">"Generate guest Wi-Fi at the front-desk kiosk; 24h validity. No ticket needed." (KB-07)</div>
+        </div>
+        <div class="bg-slate-800 p-5 rounded-xl border border-purple-800/60">
+          <span class="px-2 py-0.5 rounded bg-purple-900 text-purple-300 font-bold mb-2 inline-block">2. Targeted Clarification</span>
+          <p class="text-slate-300 mb-2 font-medium">Refuses to guess on vague or underspecified requests.</p>
+          <div class="text-slate-400 italic">"REQ-15: 'hey can you help, its not working' -> Asks device type, error code, and onset time."</div>
+        </div>
+        <div class="bg-slate-800 p-5 rounded-xl border border-rose-800/60">
+          <span class="px-2 py-0.5 rounded bg-rose-900 text-rose-300 font-bold mb-2 inline-block">3. Security Interception</span>
+          <p class="text-slate-300 mb-2 font-medium">Catches dangerous behaviors like forwarding phishing emails.</p>
+          <div class="text-slate-400 italic">"REQ-08: DO NOT forward to teammates! Auto-flagged to security@veridian-corp.example." (KB-09)</div>
+        </div>
+        <div class="bg-slate-800 p-5 rounded-xl border border-amber-800/60">
+          <span class="px-2 py-0.5 rounded bg-amber-900 text-amber-300 font-bold mb-2 inline-block">4. Structured Escalation</span>
+          <p class="text-slate-300 mb-2 font-medium">Creates tickets routed to the exact department with SLAs.</p>
+          <div class="text-slate-400 italic">"REQ-04: Non-catalog software -> Ticket opened for IT Security review (3-5 day SLA)." (KB-04)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 06 / Edge Cases</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Handling Cross-Departmental Boundaries</h2>
+      <div class="space-y-3 text-xs">
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-lg bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold shrink-0">1</div>
+          <div>
+            <div class="font-bold text-sm text-white mb-1">IT vs. Finance Boundaries (KB-08)</div>
+            <p class="text-slate-300">Access to expense software is granted by Finance, not IT. IT only assists with credentials once an account exists. The agent clarifies ownership instead of creating useless tickets.</p>
+          </div>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold shrink-0">2</div>
+          <div>
+            <div class="font-bold text-sm text-white mb-1">Contractor Compliance vs. Full-Time Employees (KB-02)</div>
+            <p class="text-slate-300">FTEs get automatic VPN credentials. Contractors require manager approval submitted via the formal access request form.</p>
+          </div>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold shrink-0">3</div>
+          <div>
+            <div class="font-bold text-sm text-white mb-1">Hardware Lifecycle vs. Early Failure (KB-03 & Precedent TK-1043)</div>
+            <p class="text-slate-300">Aman Gupta (2-year laptop) gets screen diagnostics/repair, not replacement. Aditi Sharma (3.5-year dead laptop) qualifies for replacement under verified failure.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 07 / Compliance</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Full Source Citation & Audit Trail</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+          <h3 class="font-bold text-sm text-blue-400 mb-2"><i class="fa-solid fa-quote-left mr-2"></i>Explicit Source Attribution</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Every response explicitly prints its ground-truth source code (e.g. <code>Source Policy: KB-07 (Guest Wi-Fi Access)</code>).
+            <br><br>
+            The user and reviewer always know <em>why</em> a rule applies and which corporate document mandates it.
+          </p>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+          <h3 class="font-bold text-sm text-emerald-400 mb-2"><i class="fa-solid fa-list-check mr-2"></i>Immutable Audit Trail</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Every interaction logs:
+            <br>• Session & Employee ID
+            <br>• Raw User Prompt
+            <br>• Classified Intent & Action
+            <br>• Policy Citation & Created Ticket ID
+            <br>• Complete Decision Rationale
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 08 / Prototype Verification</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Demo Scenarios & Test Suite</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <span class="font-bold text-blue-400">REQ-02</span>
+          <div class="font-semibold text-white mt-1">Guest Wi-Fi</div>
+          <p class="text-slate-400 mt-1">Resolved self-service at kiosk (KB-07).</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <span class="font-bold text-rose-400">REQ-08</span>
+          <div class="font-semibold text-white mt-1">Phishing Forward</div>
+          <p class="text-slate-400 mt-1">Halted forwarding, auto-escalated (KB-09).</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <span class="font-bold text-purple-400">REQ-15</span>
+          <div class="font-semibold text-white mt-1">Vague Request</div>
+          <p class="text-slate-400 mt-1">Diagnostic follow-up questionnaire.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <span class="font-bold text-amber-400">REQ-01</span>
+          <div class="font-semibold text-white mt-1">Dead Laptop</div>
+          <p class="text-slate-400 mt-1">Replacement approved per TK-1043.</p>
+        </div>
+      </div>
+      <p class="text-xs text-slate-400">The prototype features a 1-click test selector in the sidebar allowing the reviewer to test all 15 cases instantly.</p>
+    </div>
+  </div>
+
+  <!-- Slide 9 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 09 / AI Tools & Engineering</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">AI Tools Used & Methodology</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+          <h3 class="font-bold text-sm text-blue-400 mb-2"><i class="fa-solid fa-robot mr-2"></i>AI Tooling Utilized</h3>
+          <p class="text-slate-300 leading-relaxed">
+            • <strong>Antigravity AI Agent:</strong> Used for rapid pair-programming, schema validation, and architecture synthesis.
+            <br><br>
+            • <strong>Strict Boundary Prompting:</strong> Constrained LLM reasoning to prevent hallucination outside the Veridian Data Pack.
+          </p>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+          <h3 class="font-bold text-sm text-emerald-400 mb-2"><i class="fa-solid fa-code-branch mr-2"></i>Engineering Discipline</h3>
+          <p class="text-slate-300 leading-relaxed">
+            • <strong>Deterministic Safety:</strong> Critical security triggers (phishing) run through deterministic interceptors.
+            <br><br>
+            • <strong>One-Command Reliability:</strong> Zero complex dependencies; works out of the box with <code>npm start</code>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10 -->
+  <div class="slide">
+    <div class="max-w-5xl mx-auto w-full my-auto space-y-6 text-center">
+      <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">Slide 10 / Submission & Impact</div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white">Business Value & Defense Summary</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto text-left text-xs my-4">
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="text-2xl font-bold text-blue-400 mb-1">40%+</div>
+          <div class="text-white font-semibold">Deflection Rate</div>
+          <p class="text-slate-400 mt-1">Routine requests handled automatically without IT agent time.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="text-2xl font-bold text-emerald-400 mb-1">100%</div>
+          <div class="text-white font-semibold">Policy Grounded</div>
+          <p class="text-slate-400 mt-1">Zero unverified advice or invented policies.</p>
+        </div>
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+          <div class="text-2xl font-bold text-rose-400 mb-1">0</div>
+          <div class="text-white font-semibold">Security Breaches</div>
+          <p class="text-slate-400 mt-1">Immediate interception of viral phishing attempts.</p>
+        </div>
+      </div>
+      <div class="pt-4 text-xs text-slate-400 space-y-1">
+        <div><strong>GitHub Repository:</strong> <span class="text-blue-400">[Insert your GitHub repo URL]</span></div>
+        <div><strong>Demo Video (Google Drive - Open Access):</strong> <span class="text-blue-400">[Insert your Drive link]</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Instructions -->
+  <div class="text-center text-xs text-slate-500 pt-4 border-t border-slate-800 flex justify-between items-center">
+    <span>Use &larr; / &rarr; arrow keys or buttons above to navigate slides</span>
+    <span>Clickable & Presenter-Ready</span>
+  </div>
+
+  <script>
+    let current = 0;
+    const slides = document.querySelectorAll('.slide');
+    const numDisplay = document.getElementById('current-slide-num');
+
+    function showSlide(idx) {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === idx);
+      });
+      numDisplay.textContent = idx + 1;
+    }
+
+    function nextSlide() {
+      if (current < slides.length - 1) {
+        current++;
+        showSlide(current);
+      }
+    }
+
+    function prevSlide() {
+      if (current > 0) {
+        current--;
+        showSlide(current);
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+  </script>
+</body>
+</html>

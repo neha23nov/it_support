@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veridian Corp — Enterprise IT Service Desk</title>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React 18 & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#0f172a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .user-bubble { background: linear-gradient(135deg, #1e40af, #2563eb); }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); }
+  </style>
+</head>
+<body class="h-screen overflow-hidden text-slate-800 bg-slate-100 flex flex-col">
+  <div id="root" class="h-full flex flex-col"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    function App() {
+      const [tab, setTab] = useState('chat');
+      const [messages, setMessages] = useState([
+        {
+          id: 'welcome',
+          sender: 'agent',
+          badge: null,
+          text: `Welcome to the **Veridian Corp IT Service Desk**.\n\nI am your automated IT support agent, grounded strictly in corporate policies (KB-01 to KB-10).\n\n• **Instant Self-Service:** Guest Wi-Fi access, VPN credential renewal, password reset portal.\n• **Policy Escalations:** Non-catalog software approvals, hardware refresh eligibility, WFH equipment.\n• **Security Reporting:** Immediate phishing intervention and security incident routing.\n\nType your inquiry below or select an employee scenario on the left to test instantly.`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+      const [input, setInput] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [employee, setEmployee] = useState('Aditi Sharma');
+      const [email, setEmail] = useState('aditi.sharma@veridian-corp.example');
+      const [requests, setRequests] = useState([]);
+      const [tickets, setTickets] = useState([]);
+      const [auditLogs, setAuditLogs] = useState([]);
+      const [policies, setPolicies] = useState({});
+      const [categoryFilter, setCategoryFilter] = useState('ALL');
+      const [ticketSearch, setTicketSearch] = useState('');
+      const chatEndRef = useRef(null);
+
+      useEffect(() => {
+        fetchRequests();
+        fetchTickets();
+        fetchAudit();
+        fetchPolicies();
+      }, []);
+
+      useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, [messages, loading]);
+
+      const fetchRequests = async () => {
+        try {
+          const res = await fetch('/api/requests');
+          const data = await res.json();
+          setRequests(data);
+        } catch (e) { console.error(e); }
+      };
+
+      const fetchTickets = async () => {
+        try {
+          const res = await fetch('/api/tickets');
+          const data = await res.json();
+          setTickets(data);
+        } catch (e) { console.error(e); }
+      };
+
+      const fetchAudit = async () => {
+        try {
+          const res = await fetch('/api/audit');
+          const data = await res.json();
+          setAuditLogs(data);
+        } catch (e) { console.error(e); }
+      };
+
+      const fetchPolicies = async () => {
+        try {
+          const res = await fetch('/api/policies');
+          const data = await res.json();
+          setPolicies(data);
+        } catch (e) { console.error(e); }
+      };
+
+      const handleSelectRequest = (req) => {
+        setEmployee(req.employee);
+        setEmail(req.email);
+        setInput(req.text);
+        setTab('chat');
+      };
+
+      const handleSend = async (e) => {
+        e?.preventDefault();
+        const text = input.trim();
+        if (!text || loading) return;
+
+        const userMsg = {
+          id: 'msg-' + Date.now(),
+          sender: 'user',
+          text: text,
+          employee: employee,
+          email: email,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        setMessages(prev => [...prev, userMsg]);
+        setInput('');
+        setLoading(true);
+
+        try {
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: text,
+              employee: employee,
+              email: email,
+              session_id: 'session-' + Date.now()
+            })
+          });
+          const data = await res.json();
+
+          const agentMsg = {
+            id: 'res-' + Date.now(),
+            sender: 'agent',
+            badge: data.type,
+            text: data.response,
+            ticketId: data.ticket_id,
+            policy: data.policy,
+            action: data.action,
+            reasoning: data.reasoning,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+
+          setMessages(prev => [...prev, agentMsg]);
+          fetchTickets();
+          fetchAudit();
+        } catch (err) {
+          console.error(err);
+          setMessages(prev => [...prev, {
+            id: 'err-' + Date.now(),
+            sender: 'agent',
+            badge: 'clarify',
+            text: 'System notification: Unable to contact the IT Support Service. Please verify connection.',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      // Metrics
+      const totalTickets = tickets.length;
+      const closedTickets = tickets.filter(t => t.status.includes('Resolved') || t.status.includes('closed')).length;
+      const activeTickets = totalTickets - closedTickets;
+      const securityIncidents = tickets.filter(t => t.category.includes('Security') || t.status.includes('Security')).length;
+
+      // Filtering tickets
+      const filteredTickets = tickets.filter(t => {
+        const query = ticketSearch.toLowerCase();
+        return (
+          t.id.toLowerCase().includes(query) ||
+          t.employee.toLowerCase().includes(query) ||
+          t.issue_summary.toLowerCase().includes(query) ||
+          t.status.toLowerCase().includes(query) ||
+          t.assigned_team.toLowerCase().includes(query)
+        );
+      });
+
+      return (
+        <div className="h-full flex flex-col bg-slate-900">
+          {/* Top Enterprise Header */}
+          <header className="bg-slate-900 border-b border-slate-800 text-white px-6 py-3.5 flex items-center justify-between shadow-lg shrink-0">
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 flex items-center justify-center font-extrabold text-xl shadow-md border border-blue-400/30">
+                V
+              </div>
+              <div>
+                <div className="flex items-center space-x-2.5">
+                  <h1 className="font-display font-bold text-base tracking-tight text-white">Veridian Corp</h1>
+                  <span className="text-[10px] font-semibold bg-slate-800 text-blue-400 px-2 py-0.5 rounded-md border border-slate-700">
+                    IT Service Desk 2.0
+                  </span>
+                  <span className="text-[10px] font-semibold bg-emerald-950/80 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-800 flex items-center">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+                    SLA Active
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">
+                  Autonomous Policy Grounding &amp; Incident Resolution &bull; Week of 21–25 Sep 2026
+                </p>
+              </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="flex items-center space-x-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700/80">
+              <button
+                onClick={() => setTab('chat')}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center space-x-2 ${
+                  tab === 'chat'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}>
+                <i className="fa-solid fa-message text-[11px]"></i>
+                <span>Chat Agent</span>
+              </button>
+
+              <button
+                onClick={() => { setTab('tickets'); fetchTickets(); }}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center space-x-2 ${
+                  tab === 'tickets'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}>
+                <i className="fa-solid fa-ticket text-[11px]"></i>
+                <span>Ticket Queue</span>
+                <span className="ml-1 bg-slate-900 text-slate-200 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                  {tickets.length}
+                </span>
+              </button>
+
+              <button
+                onClick={() => { setTab('audit'); fetchAudit(); }}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center space-x-2 ${
+                  tab === 'audit'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}>
+                <i className="fa-solid fa-shield-halved text-[11px]"></i>
+                <span>Audit Trail</span>
+                <span className="ml-1 bg-slate-900 text-slate-200 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                  {auditLogs.length}
+                </span>
+              </button>
+
+              <button
+                onClick={() => { setTab('policies'); fetchPolicies(); }}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center space-x-2 ${
+                  tab === 'policies'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                }`}>
+                <i className="fa-solid fa-book-bookmark text-[11px]"></i>
+                <span>Knowledge Base</span>
+              </button>
+            </div>
+          </header>
+
+          {/* Main Layout Area */}
+          <main className="flex-1 flex overflow-hidden bg-slate-100">
+            {/* Left Sidebar: 15 Employee Test Scenarios */}
+            <aside className="w-80 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 shadow-sm">
+              <div className="p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    Data Pack Scenarios
+                  </span>
+                  <span className="text-[10px] font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
+                    15 Cases
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                  Click any verified employee request to simulate:
+                </p>
+              </div>
+
+              {/* List of Requests */}
+              <div className="flex-1 overflow-y-auto custom-scroll p-3 space-y-2.5">
+                {requests.map(req => {
+                  const isSelected = employee === req.employee;
+                  return (
+                    <div
+                      key={req.id}
+                      onClick={() => handleSelectRequest(req)}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer text-left relative overflow-hidden group ${
+                        isSelected
+                          ? 'border-blue-500 bg-blue-50/60 shadow-sm'
+                          : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/80 shadow-xs'
+                      }`}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-mono text-xs font-bold text-blue-700">
+                          {req.id}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {req.date}
+                        </span>
+                      </div>
+                      <div className="font-semibold text-xs text-slate-900 group-hover:text-blue-600 transition">
+                        {req.employee}
+                      </div>
+                      <p className="text-[11px] text-slate-600 line-clamp-2 mt-1 leading-snug">
+                        {req.text}
+                      </p>
+                      <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
+                        <span className="text-slate-400 italic">
+                          Status: {req.initial_status}
+                        </span>
+                        <span className="font-semibold text-blue-600 flex items-center space-x-1 group-hover:translate-x-0.5 transition-transform">
+                          <span>Simulate</span>
+                          <i className="fa-solid fa-chevron-right text-[8px]"></i>
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </aside>
+
+            {/* Central Workspace */}
+            <section className="flex-1 flex flex-col h-full bg-slate-50 relative overflow-hidden">
+              {/* TAB 1: CHAT AGENT */}
+              {tab === 'chat' && (
+                <div className="flex-1 flex flex-col h-full">
+                  {/* Context Subheader */}
+                  <div className="bg-white px-6 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs shrink-0 shadow-xs">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center font-bold text-slate-700 text-xs">
+                        {employee.charAt(0)}
+                      </div>
+                      <div>
+                        <span className="text-slate-400">Current Session: </span>
+                        <span className="font-semibold text-slate-800">{employee}</span>
+                        <span className="text-slate-400 font-mono ml-1.5">({email})</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 text-[11px] text-slate-500 font-medium">
+                      <i className="fa-solid fa-scale-balanced text-blue-600"></i>
+                      <span>Policy Enforcement: KB-01 – KB-10</span>
+                    </div>
+                  </div>
+
+                  {/* Messages Feed */}
+                  <div className="flex-1 p-6 overflow-y-auto custom-scroll space-y-4">
+                    {messages.map((m) => (
+                      <div
+                        key={m.id}
+                        className={`flex items-start space-x-3 ${m.sender === 'user' ? 'justify-end' : ''}`}>
+                        {m.sender === 'agent' && (
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-md">
+                            IT
+                          </div>
+                        )}
+
+                        <div className={`p-4 rounded-2xl max-w-2xl text-xs sm:text-sm shadow-xs ${
+                          m.sender === 'user'
+                            ? 'user-bubble text-white rounded-br-xs shadow-md'
+                            : 'bg-white border border-slate-200/90 text-slate-800 rounded-bl-xs'
+                        }`}>
+                          {/* User Header */}
+                          {m.sender === 'user' && (
+                            <div className="text-[10px] text-blue-100 font-semibold mb-1 flex items-center justify-between">
+                              <span>{m.employee}</span>
+                              <span className="opacity-80">{m.time}</span>
+                            </div>
+                          )}
+
+                          {/* Agent Header Badges */}
+                          {m.sender === 'agent' && (
+                            <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                              <div>
+                                {m.badge === 'resolve' && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <i className="fa-solid fa-circle-check mr-1.5 text-emerald-600"></i>
+                                    Self-Service Resolved
+                                  </span>
+                                )}
+                                {m.badge === 'escalate' && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                    <i className="fa-solid fa-arrow-up-right-from-square mr-1.5 text-amber-600"></i>
+                                    Ticket Created &amp; Escalated
+                                  </span>
+                                )}
+                                {m.badge === 'clarify' && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                    <i className="fa-solid fa-circle-question mr-1.5 text-purple-600"></i>
+                                    Clarification Required
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[10px] text-slate-400 font-medium">{m.time}</span>
+                            </div>
+                          )}
+
+                          {/* Message Body */}
+                          <div className="whitespace-pre-line leading-relaxed font-normal">
+                            {m.text}
+                          </div>
+
+                          {/* Agent Decision Footnote & Citation */}
+                          {m.sender === 'agent' && m.policy && (
+                            <div className="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] text-slate-500 gap-2">
+                              <span className="font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                <i className="fa-solid fa-shield mr-1 text-[10px]"></i>
+                                {m.policy}
+                              </span>
+                              {m.ticketId && (
+                                <span className="font-mono font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                  Ref: {m.ticketId}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {m.sender === 'user' && (
+                          <div className="w-9 h-9 rounded-xl bg-slate-800 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-md">
+                            {m.employee ? m.employee.charAt(0) : 'U'}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {loading && (
+                      <div className="flex items-start space-x-3">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-md">
+                          IT
+                        </div>
+                        <div className="bg-white border border-slate-200 p-4 rounded-2xl text-xs text-slate-600 shadow-xs flex items-center space-x-3">
+                          <i className="fa-solid fa-circle-notch fa-spin text-blue-600 text-sm"></i>
+                          <span>Evaluating against Veridian Corp policies &amp; precedents...</span>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={chatEndRef} />
+                  </div>
+
+                  {/* Input & Quick Chips */}
+                  <div className="p-4 bg-white border-t border-slate-200 shadow-sm shrink-0">
+                    <div className="max-w-4xl mx-auto space-y-2.5">
+                      {/* Quick Action Chips */}
+                      <div className="flex items-center space-x-2 overflow-x-auto pb-1 text-[11px]">
+                        <span className="text-slate-400 font-medium">Quick Prompts:</span>
+                        <button
+                          onClick={() => setInput("Can I get Wi-Fi access for a guest visiting our office tomorrow?")}
+                          className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition font-medium">
+                          Guest Wi-Fi (KB-07)
+                        </button>
+                        <button
+                          onClick={() => setInput("I think I got a phishing email asking for my login — forwarding it to a few teammates to check.")}
+                          className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition font-medium">
+                          Phishing Forward (KB-09)
+                        </button>
+                        <button
+                          onClick={() => setInput("hey can you help, its not working")}
+                          className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg transition font-medium">
+                          Vague Request (Triage)
+                        </button>
+                        <button
+                          onClick={() => setInput("My laptop won’t turn on at all, it’s completely dead, had it about 3.5 years now.")}
+                          className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg transition font-medium">
+                          Dead Laptop 3.5y (KB-03)
+                        </button>
+                      </div>
+
+                      {/* Chat Input Form */}
+                      <form onSubmit={handleSend} className="flex items-center space-x-2">
+                        <input
+                          type="text"
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          placeholder="Describe your IT issue or question..."
+                          className="flex-1 px-4 py-3 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-blue-600 focus:bg-white transition shadow-xs"
+                        />
+                        <button
+                          type="submit"
+                          disabled={loading || !input.trim()}
+                          className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center space-x-2 transition shadow-sm">
+                          <span>Send</span>
+                          <i className="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: TICKETS QUEUE */}
+              {tab === 'tickets' && (
+                <div className="flex-1 p-6 overflow-y-auto custom-scroll space-y-6">
+                  {/* KPI Metrics */}
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <div className="text-xs text-slate-500 font-medium">Total Tickets</div>
+                      <div className="text-2xl font-extrabold text-slate-900 mt-1">{totalTickets}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Precedents + Live</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <div className="text-xs text-amber-600 font-medium">Active / In-Progress</div>
+                      <div className="text-2xl font-extrabold text-amber-700 mt-1">{activeTickets}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Require Action</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <div className="text-xs text-emerald-600 font-medium">Resolved / Closed</div>
+                      <div className="text-2xl font-extrabold text-emerald-700 mt-1">{closedTickets}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Completed Cases</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <div className="text-xs text-rose-600 font-medium">Security Incidents</div>
+                      <div className="text-2xl font-extrabold text-rose-700 mt-1">{securityIncidents}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Auto-Flagged (KB-09)</div>
+                    </div>
+                  </div>
+
+                  {/* Table Control Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900">Enterprise Service Queue</h2>
+                      <p className="text-xs text-slate-500">Live ticket queue synchronized with historical records (TK-1042 to TK-1051)</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="relative">
+                        <i className="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        <input
+                          type="text"
+                          placeholder="Search tickets..."
+                          value={ticketSearch}
+                          onChange={(e) => setTicketSearch(e.target.value)}
+                          className="pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <button
+                        onClick={fetchTickets}
+                        className="text-xs font-semibold px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition border border-blue-200">
+                        <i className="fa-solid fa-rotate-right mr-1"></i> Refresh
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tickets Table */}
+                  <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                          <tr>
+                            <th className="p-3.5">Ticket ID</th>
+                            <th className="p-3.5">Employee</th>
+                            <th className="p-3.5">Issue Summary</th>
+                            <th className="p-3.5">Category</th>
+                            <th className="p-3.5">Status</th>
+                            <th className="p-3.5">Assigned Team</th>
+                            <th className="p-3.5">Source Policy</th>
+                            <th className="p-3.5">Created</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {filteredTickets.map(t => (
+                            <tr key={t.id} className="hover:bg-slate-50/80 transition">
+                              <td className="p-3.5 font-mono font-bold text-blue-600">{t.id}</td>
+                              <td className="p-3.5 font-semibold text-slate-900">{t.employee}</td>
+                              <td className="p-3.5 text-slate-700 max-w-xs truncate">{t.issue_summary}</td>
+                              <td className="p-3.5 text-slate-500">{t.category}</td>
+                              <td className="p-3.5">
+                                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                                  t.status.includes('Resolved') || t.status.includes('closed')
+                                    ? 'bg-slate-100 text-slate-600'
+                                    : t.status.includes('Escalated') || t.status.includes('Security')
+                                    ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                                    : 'bg-amber-100 text-amber-800 border border-amber-200'
+                                }`}>
+                                  {t.status}
+                                </span>
+                              </td>
+                              <td className="p-3.5 text-slate-600 font-medium">{t.assigned_team}</td>
+                              <td className="p-3.5 text-slate-500 font-mono text-[11px]">{t.source_policy}</td>
+                              <td className="p-3.5 text-slate-400 text-[10px] font-mono">{t.created_at}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: AUDIT TRAIL */}
+              {tab === 'audit' && (
+                <div className="flex-1 p-6 overflow-y-auto custom-scroll space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900">Compliance &amp; Decision Audit Log</h2>
+                      <p className="text-xs text-slate-500">Immutable, tamper-evident log of inputs, detected intents, policy citations, and reasoning</p>
+                    </div>
+                    <button
+                      onClick={fetchAudit}
+                      className="text-xs font-semibold px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition border border-blue-200">
+                      <i className="fa-solid fa-rotate-right mr-1"></i> Refresh
+                    </button>
+                  </div>
+
+                  {auditLogs.length === 0 ? (
+                    <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center text-slate-400 text-xs">
+                      No interactions recorded in the audit trail yet. Send a message in the Chat agent to see entries logged here.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {auditLogs.map(l => (
+                        <div key={l.id} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-xs text-xs space-y-2">
+                          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-bold text-slate-900">{l.employee}</span>
+                              <span className="text-slate-300">&bull;</span>
+                              <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                Intent: {l.intent}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-slate-400 font-mono">{l.timestamp}</span>
+                          </div>
+
+                          <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-slate-700 font-mono text-[11px] leading-relaxed">
+                            "{l.user_input}"
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-600 text-xs pt-1">
+                            <div className="bg-slate-50/70 p-2 rounded-lg border border-slate-100">
+                              <strong className="text-slate-900">Action:</strong> {l.action_taken}
+                            </div>
+                            <div className="bg-slate-50/70 p-2 rounded-lg border border-slate-100">
+                              <strong className="text-slate-900">Policy Cited:</strong> {l.policy_cited}
+                            </div>
+                            <div className="bg-slate-50/70 p-2 rounded-lg border border-slate-100">
+                              <strong className="text-slate-900">Ticket Ref:</strong> {l.ticket_id || 'None (Self-Service)'}
+                            </div>
+                            <div className="bg-slate-50/70 p-2 rounded-lg border border-slate-100">
+                              <strong className="text-slate-900">Decision Rationale:</strong> {l.reasoning}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 4: KNOWLEDGE BASE */}
+              {tab === 'policies' && (
+                <div className="flex-1 p-6 overflow-y-auto custom-scroll space-y-4">
+                  <div className="border-b border-slate-200 pb-3">
+                    <h2 className="text-base font-bold text-slate-900">Veridian Corp IT Knowledge Base &amp; Ground Truth</h2>
+                    <p className="text-xs text-slate-500">Official data pack policies (KB-01 to KB-10) and Asset Management Policy</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Object.entries(policies).map(([code, p]) => (
+                      <div
+                        key={code}
+                        className="bg-white border border-slate-200 p-5 rounded-2xl shadow-xs hover:border-blue-400 transition-all flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                              {code}
+                            </span>
+                            <span className="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                              {p.category}
+                            </span>
+                          </div>
+                          <h3 className="font-bold text-sm text-slate-900 mb-2">{p.title}</h3>
+                          <p className="text-xs text-slate-600 leading-relaxed">{p.summary}</p>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
+                          <span>Ground Truth Asset</span>
+                          <span className="text-emerald-600 font-semibold flex items-center">
+                            <i className="fa-solid fa-check-circle mr-1"></i> Active Policy
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

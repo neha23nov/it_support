@@ -1,0 +1,13 @@
+{
+  "name": "veridian-it-support-agent-mern",
+  "version": "1.0.0",
+  "description": "AIONOS Assignment 2 - Internal Service Agent (IT Support) built with MERN Stack",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js"
+  },
+  "keywords": ["mern", "ai-agent", "aionos", "it-support"],
+  "author": "",
+  "license": "ISC"
+}
