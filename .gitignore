@@ -39,3 +39,6 @@ it_support.db
 # Presentation Artifacts
 Veridian_IT_Support_Agent_Presentation.pptx
 ~$Veridian_IT_Support_Agent_Presentation.pptx
+
+# Local Test Files
+test_suite.js
